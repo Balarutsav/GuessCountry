@@ -1,4 +1,9 @@
 <resources>
     <string name="app_name">GuessCountry</string>
     <string name="home">Home</string>
+    <string name="txt_guess_the_country">Guess the Country</string>
+    <string name="txt_guess_hints">Guess-Hints</string>
+    <string name="txt_guess_the_flag">Guess the Flag</string>
+    <string name="txt_advanced_level">Advanced Level</string>
+    <string name="description_back_arrow">back arrow\n</string>
 </resources>

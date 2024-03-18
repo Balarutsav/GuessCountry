@@ -1,13 +1,10 @@
-package com.guesscountry.presentation
+package com.guesscountry.presentation.home
 
-import android.app.Application
 import android.content.Context
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.guesscountry.data.CountryEntity
 import com.guesscountry.data.CountryDao
-import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
@@ -28,18 +25,18 @@ class HomeViewModel @Inject constructor(
 
     init {
         addCountryInDB()
-
     }
 
    private fun addCountryInDB() {
         viewModelScope.launch {
             val countryObject = readJsonData()
             countryObject?.let {
-                Log.e(TAG, "addCountryInDB: ${countryObject}", )
               val countryList=  getCountryListFromJson(it)
-                Log.e(TAG, "addCountryInDB: ${countryList.size}", )
-            countryDao.insertCountries(countryList)
-            }
+                if (countryDao.getCountOfCountries()==0){
+                    countryDao.insertCountries(countryList)
+
+                }
+                    }
         }
 
     }
