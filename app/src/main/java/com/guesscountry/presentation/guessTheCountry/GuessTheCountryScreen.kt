@@ -1,8 +1,11 @@
 package com.guesscountry.presentation.guessTheCountry
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -21,7 +24,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -43,8 +45,7 @@ import java.util.Locale
 
 @Composable
 fun GuessTheCountryScreen(
-    viewModel: GuessTheCountryViewModel = hiltViewModel(),
-    onClickBack: () -> Unit, nextScreen: () -> Unit
+    viewModel: GuessTheCountryViewModel = hiltViewModel(), onClickBack: () -> Unit
 ) {
     LaunchedEffect(Unit) {
         viewModel.getCountryList()
@@ -56,26 +57,21 @@ fun GuessTheCountryScreen(
 
     var buttonText by rememberSaveable { mutableStateOf("Submit") }
 
-    Scaffold(
-        topBar = {
-            CustomTopAppBar(
-                title = {
-                    Text(
-                        modifier = Modifier.fillMaxWidth(),
-                        text = stringResource(R.string.txt_guess_the_country),
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = onClickBack) {
-                        Icon(
-                            Icons.Default.ArrowBack,
-                            contentDescription = stringResource(R.string.description_back_arrow)
-                        )
-                    }
-                }
+    Scaffold(topBar = {
+        CustomTopAppBar(title = {
+            Text(
+                modifier = Modifier.fillMaxWidth(),
+                text = stringResource(R.string.txt_guess_the_country),
             )
-        }
-    ) {
+        }, navigationIcon = {
+            IconButton(onClick = onClickBack) {
+                Icon(
+                    Icons.Default.ArrowBack,
+                    contentDescription = stringResource(R.string.description_back_arrow)
+                )
+            }
+        })
+    }) {
         Column(
             modifier = Modifier
                 .padding(it)
@@ -96,17 +92,22 @@ fun GuessTheCountryScreen(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         RadioButton(
-                            selected = country.name == viewModel.selectedCountryName,
-                            onClick = {
+                            selected = country.name == viewModel.selectedCountryName, onClick = {
                                 viewModel.selectedCountryName = country.name
-                            },
-                            modifier = Modifier.padding(end = 8.dp)
+                            }, modifier = Modifier.padding(end = 8.dp)
                         )
 
-                        Text(
-                            text = country.name,
-                            modifier = Modifier.weight(1f) // Expand to fill remaining space
-                        )
+
+                        Box(modifier = Modifier
+                            .weight(1f)
+                            .clickable {
+                                viewModel.selectedCountryName = country.name
+                            }) {
+                            Text(
+
+                                text = country.name, modifier = Modifier.fillMaxSize()
+                            )
+                        }
                     }
                 }
             }
@@ -123,8 +124,7 @@ fun GuessTheCountryScreen(
                         viewModel.reset()
 
                     }
-                },
-                modifier = Modifier.padding(16.dp)
+                }, modifier = Modifier.padding(16.dp)
             ) {
                 Text(text = buttonText)
             }
@@ -168,20 +168,15 @@ fun GuessTheCountryScreen(
 
 @Composable
 fun CountryImage(
-    code: String,
-    modifier: Modifier = Modifier
+    code: String, modifier: Modifier = Modifier
 ) {
-    val context = LocalContext.current
     val imageUrl = "file:///android_asset/countryFlags/$code.png"
     val painter = rememberAsyncImagePainter(
-        ImageRequest.Builder(LocalContext.current).data(data = imageUrl).apply(block = fun ImageRequest.Builder.() {
-
-        }).build()
+        ImageRequest.Builder(LocalContext.current).data(data = imageUrl)
+            .build()
     )
 
     Image(
-        painter = painter,
-        contentDescription = null,
-        modifier = modifier
+        painter = painter, contentDescription = null, modifier = modifier
     )
 }

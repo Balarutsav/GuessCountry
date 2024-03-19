@@ -30,4 +30,7 @@ interface CountryDao {
 
     @Query("SELECT * FROM countries WHERE id NOT IN (:excludedIds) ORDER BY RANDOM() LIMIT 1")
     suspend fun getRandomCountry(excludedIds: List<Int>): CountryEntity
+
+    @Query("SELECT * FROM countries WHERE id NOT IN (:excludedIds) ORDER BY RANDOM() LIMIT 3")
+    suspend fun getRandomThreeCountry(excludedIds: List<Int>): List<CountryEntity>
 }

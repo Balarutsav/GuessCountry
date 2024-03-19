@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.guesscountry.presentation.GuessTheFlagScreen.GuessTheFlagScreen
 import com.guesscountry.presentation.guessTheCountry.GuessTheCountryScreen
 import com.guesscountry.presentation.home.HomeScreen
 
@@ -23,6 +24,7 @@ fun MainGraph(
             }, onClickAdvanceLevel = {
 
             }, onClickGuessTheFlag = {
+                navController.navigate(Screen.GuessFlags.route)
 
             })
         }
@@ -34,12 +36,18 @@ fun MainGraph(
 
                 }
 
-            }){
-                navController.navigate(Screen.GuessTheCountry.route) {
+            })
+        }
+
+        composable(Screen.GuessFlags.route){
+
+            GuessTheFlagScreen(onClickBack =  {
+                navController.navigate(Screen.GuessFlags.route) {
                     popUpTo(0)
 
                 }
-            }
+
+            })
         }
     }
 
