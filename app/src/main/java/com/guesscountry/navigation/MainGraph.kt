@@ -42,7 +42,7 @@ fun MainGraph(
         composable(Screen.GuessFlags.route){
 
             GuessTheFlagScreen(onClickBack =  {
-                navController.navigate(Screen.GuessFlags.route) {
+                navController.navigate(Screen.Home.route) {
                     popUpTo(0)
 
                 }
