@@ -1,16 +1,18 @@
 package com.guesscountry.navigation
 
+import android.content.Context
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.guesscountry.presentation.GuessTheFlagScreen.GuessTheFlagScreen
+import com.guesscountry.presentation.guessTheFlagScreen.GuessTheFlagScreen
 import com.guesscountry.presentation.guessTheCountry.GuessTheCountryScreen
 import com.guesscountry.presentation.home.HomeScreen
 
 @Composable
 fun MainGraph(
-    navController: NavHostController
+    navController: NavHostController,
+    applicationContext: Context
 ) {
 
     NavHost(navController = navController, startDestination = Screen.Home.route) {
@@ -41,7 +43,7 @@ fun MainGraph(
 
         composable(Screen.GuessFlags.route){
 
-            GuessTheFlagScreen(onClickBack =  {
+            GuessTheFlagScreen(context = applicationContext,onClickBack =  {
                 navController.navigate(Screen.Home.route) {
                     popUpTo(0)
 

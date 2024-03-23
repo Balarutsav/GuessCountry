@@ -16,14 +16,17 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -34,11 +37,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import com.guesscountry.R
 import com.guesscountry.ui.components.CustomTopAppBar
+import com.guesscountry.utils.PreferenceManager
+import com.guesscountry.utils.SharedPreferencesKey
 import kotlinx.coroutines.delay
 import java.util.Locale
 
@@ -47,15 +53,55 @@ import java.util.Locale
 fun GuessTheCountryScreen(
     viewModel: GuessTheCountryViewModel = hiltViewModel(), onClickBack: () -> Unit
 ) {
+
+
+    val context = LocalContext.current
+
+    val preferenceManager = remember { PreferenceManager(context) }
+    var timerRunning by rememberSaveable {
+
+        mutableStateOf(false)
+    }
+
+    val timerCompleted by viewModel.timerCompleted.collectAsState(initial = false)
+
+
+    val isTimerVisible =
+        preferenceManager.getBoolean(SharedPreferencesKey.isCountDownTimerEnable, false)
+
+
     LaunchedEffect(Unit) {
         viewModel.getCountryList()
+
+        // Start the timer if countdown timer is enabled in SharedPreferences
+        if (isTimerVisible) {
+            if(!timerRunning ){
+                viewModel.startTimer()
+                timerRunning=true
+            }
+
+        }
     }
+
+
+
 
     var showMessage by rememberSaveable { mutableStateOf(false) }
     val countryList = viewModel.countryList.value
     val randomCountry = viewModel.getSavedRandomCountry()
 
     var buttonText by rememberSaveable { mutableStateOf("Submit") }
+
+
+    if (timerCompleted) {
+        if (buttonText.equals("Submit")) {
+
+                showMessage = true
+                buttonText = "Next"
+
+        }
+    }
+
 
     Scaffold(topBar = {
         CustomTopAppBar(title = {
@@ -79,7 +125,15 @@ fun GuessTheCountryScreen(
 
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-
+            if (isTimerVisible){
+                Text(
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .align(Alignment.End),
+                    text = if (viewModel.remainingTime!=0) "Remaining Time: ${viewModel.remainingTime} seconds" else "" ,
+                    fontSize = 20.sp
+                )
+            }
             CountryImage(
                 (randomCountry?.code ?: "").lowercase(Locale.getDefault()),
                 modifier = Modifier.size(105.dp) // Set the size as per your requirement
@@ -115,13 +169,18 @@ fun GuessTheCountryScreen(
             Button(
                 onClick = {
                     if (buttonText.equals("Submit")) {
+                        showMessage = true
                         if (viewModel.selectedCountryName.isNotBlank()) {
-                            showMessage = true
                             buttonText = "Next"
                         }
                     } else {
                         buttonText = "Submit"
                         viewModel.reset()
+                        if (isTimerVisible){
+
+                            viewModel.resetTimerCompleted()
+                            viewModel.startTimer()
+                        }
 
                     }
                 }, modifier = Modifier.padding(16.dp)
@@ -135,11 +194,18 @@ fun GuessTheCountryScreen(
                     modifier = Modifier.padding(16.dp),
                     containerColor = if (viewModel.selectedCountryName == randomCountry?.name) {
                         Color(0xFF4CAF50) // Green color for correct answer
-                    } else {
+                    } else if (viewModel.selectedCountryName.isEmpty() && !timerCompleted) {
+                        MaterialTheme.colorScheme.primary
+                    }  else {
                         Color(0xFFF44336) // Red color for wrong answer
                     }
                 ) {
-                    val styleText = if (viewModel.selectedCountryName == randomCountry?.name) {
+                    val styleText = if (viewModel.selectedCountryName.isEmpty() && !timerCompleted) {
+                        buildAnnotatedString {
+                            append("Please select country flag.")
+                        }
+
+                    }else if (viewModel.selectedCountryName == randomCountry?.name) {
                         buildAnnotatedString {
                             append("CORRECT!")
                         }
@@ -165,6 +231,7 @@ fun GuessTheCountryScreen(
 
 
 }
+
 
 @Composable
 fun CountryImage(

@@ -1,6 +1,10 @@
 package com.guesscountry.presentation.home
 
 import android.content.Context
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.guesscountry.data.CountryEntity
@@ -22,6 +26,7 @@ class HomeViewModel @Inject constructor(
     companion object{
         val TAG="HomeViewModel"
     }
+    var countingDown by mutableStateOf(false)
 
     init {
         addCountryInDB()
@@ -31,8 +36,8 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             val countryObject = readJsonData()
             countryObject?.let {
-              val countryList=  getCountryListFromJson(it)
                 if (countryDao.getCountOfCountries()==0){
+                    val countryList=  getCountryListFromJson(it)
                     countryDao.insertCountries(countryList)
 
                 }
