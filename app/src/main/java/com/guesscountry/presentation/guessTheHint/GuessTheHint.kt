@@ -1,13 +1,12 @@
 package com.guesscountry.presentation.guessTheHint
 
-import android.widget.EditText
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -17,14 +16,18 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.ViewModel
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import com.guesscountry.R
@@ -36,8 +39,18 @@ import java.util.Locale
 fun GuessTheHint(
     guessTheHintViewModel: GuessTheHintViewModel = hiltViewModel(), onClickBack: () -> Unit
 ) {
+    val TAG = "Guess The Hint"
+
     val randomCountry = guessTheHintViewModel.getSavedRandomCountry()
 
+
+    val guessedCountryName = remember { mutableStateListOf<String>() }
+
+
+    guessTheHintViewModel.getSavedRandomCountry()?.name?.toList()?.map { " " }?.let { nameList ->
+        guessedCountryName.clear()
+        guessedCountryName.addAll(nameList)
+    }
     Scaffold(topBar = {
         CustomTopAppBar(title = {
             Text(
@@ -70,15 +83,20 @@ fun GuessTheHint(
             LazyRow {
                 itemsIndexed(randomCountry?.name?.toList() ?: emptyList()) { index, countryName ->
 
-                    TextField( guessTheHintViewModel.guessedCountryName.value.get(index),
+                    TextField(
+                        value =guessedCountryName.get(index) ,
+                        onValueChange = {
+                            Log.e(TAG, "GuessTheHint: ${it}", )
+                            guessedCountryName[index] = it
+                            Log.e(TAG, "GuessTheHint: ${guessedCountryName.toList()}", )
+
+                                        },
                         modifier = Modifier
                             .padding(10.dp)
-                            .size(30.dp),
-                        onValueChange = {
+                            .size(50.dp),
+                        textStyle = TextStyle(Color.Black)
 
-                            guessTheHintViewModel.     guessedCountryName.value.set(index, it)
-
-                        })
+                    )
                 }
             }
 

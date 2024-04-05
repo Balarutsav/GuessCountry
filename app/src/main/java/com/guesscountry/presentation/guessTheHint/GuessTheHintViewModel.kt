@@ -21,7 +21,7 @@ class GuessTheHintViewModel @Inject constructor(val countryDao: CountryDao) : Vi
     private val selectedCountryIds = mutableListOf<Int>()
 
     val guessedCountryName = lazy {
-        MutableList(getSavedRandomCountry()?.name?.toList()?.size ?: 0) { "" }
+        MutableList(getSavedRandomCountry()?.name?.toList()?.size ?: 0) { " " }
     }
     init {
         getRandomCountry()
