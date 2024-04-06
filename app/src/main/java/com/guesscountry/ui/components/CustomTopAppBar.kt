@@ -2,6 +2,7 @@ package com.guesscountry.ui.components
 
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -23,6 +24,12 @@ fun CustomTopAppBar(
         modifier = modifier.shadow(2.dp),
         navigationIcon = navigationIcon,
         actions = actions,
+        colors = TopAppBarDefaults.topAppBarColors(MaterialTheme.colorScheme.primary,            titleContentColor = MaterialTheme.colorScheme.onPrimary,
+            navigationIconContentColor = MaterialTheme.colorScheme.onPrimary,
 
-    )
+            ),
+
+
+
+        )
 }

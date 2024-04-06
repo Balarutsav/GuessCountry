@@ -7,11 +7,15 @@ import androidx.room.Query
 
 @Dao
 interface CountryDao {
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.ABORT)
     suspend fun insertCountry(country: CountryEntity)
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.ABORT)
     suspend fun insertCountries(countries: List<CountryEntity>)
+
+    @Query("SELECT COUNT(*) FROM countries")
+    suspend fun getCountOfCountries(): Int
+
     @Query("SELECT * FROM countries WHERE name LIKE '%' || :searchTerm || '%'")
     suspend fun searchByName(searchTerm: String): List<CountryEntity>
 
@@ -23,4 +27,10 @@ interface CountryDao {
 
     @Query("SELECT * FROM countries")
     suspend fun getAllCountries(): List<CountryEntity>
+
+    @Query("SELECT * FROM countries WHERE id NOT IN (:excludedIds) ORDER BY RANDOM() LIMIT 1")
+    suspend fun getRandomCountry(excludedIds: List<Int>): CountryEntity
+
+    @Query("SELECT * FROM countries WHERE id NOT IN (:excludedIds) ORDER BY RANDOM() LIMIT 3")
+    suspend fun getRandomThreeCountry(excludedIds: List<Int>): List<CountryEntity>
 }
