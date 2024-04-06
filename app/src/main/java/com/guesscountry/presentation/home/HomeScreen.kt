@@ -38,30 +38,43 @@ fun HomeScreen(
     onClickAdvanceLevel: () -> Unit,
 
     ) {
-    val context=LocalContext.current
+    val context = LocalContext.current
     val preferenceManager = remember { PreferenceManager(context) }
 
-    var isCountDownEnable by rememberSaveable { mutableStateOf(preferenceManager.getBoolean(SharedPreferencesKey.isCountDownTimerEnable, false)) }
+    var isCountDownEnable by rememberSaveable {
+        mutableStateOf(
+            preferenceManager.getBoolean(
+                SharedPreferencesKey.isCountDownTimerEnable,
+                false
+            )
+        )
+    }
 
 
     Scaffold { padding ->
-        Column(modifier = Modifier
-            .padding(padding)
-            .fillMaxSize()) {
+        Column(
+            modifier = Modifier
+                .padding(padding)
+                .fillMaxSize()
+        ) {
 
             Row(
-                verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.End, modifier = Modifier
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.End,
+                modifier = Modifier
                     .padding(16.dp)
                     .fillMaxWidth()
             ) {
                 Text("CountDown Timer :")
                 Spacer(modifier = Modifier.width(5.dp))
                 Switch(
-                    checked = isCountDownEnable,
-                    onCheckedChange = { isCountDownEnable = it
-                        preferenceManager.setBoolean(SharedPreferencesKey.isCountDownTimerEnable, it)
-                    },
-                    modifier = Modifier.padding(start = 5.dp)
+                    checked = isCountDownEnable, onCheckedChange = {
+                        isCountDownEnable = it
+                        preferenceManager.setBoolean(
+                            SharedPreferencesKey.isCountDownTimerEnable,
+                            it
+                        )
+                    }, modifier = Modifier.padding(start = 5.dp)
                 )
             }
             Column(
@@ -78,16 +91,10 @@ fun HomeScreen(
                     text = stringResource(R.string.txt_guess_the_country)
                 )
                 RoundedButton(
-                    onClick = onClickGuessHints, text = stringResource(R.string.txt_guess_hints)
-                )
-                RoundedButton(
                     onClick = onClickGuessTheFlag,
                     text = stringResource(R.string.txt_guess_the_flag)
                 )
-                RoundedButton(
-                    onClick = onClickAdvanceLevel,
-                    text = stringResource(R.string.txt_advanced_level)
-                )
+
             }
         }
     }

@@ -34,7 +34,10 @@ fun MainGraph(
 
         composable(Screen.GuessHints.route) {
             GuessTheHint {
+                navController.navigate(Screen.Home.route) {
+                    popUpTo(0)
 
+                }
             }
         }
 
