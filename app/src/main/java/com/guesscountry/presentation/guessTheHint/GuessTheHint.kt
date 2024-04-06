@@ -95,7 +95,6 @@ fun GuessTheHint(
                             .padding(10.dp)
                             .size(50.dp),
                         textStyle = TextStyle(Color.Black)
-
                     )
                 }
             }
